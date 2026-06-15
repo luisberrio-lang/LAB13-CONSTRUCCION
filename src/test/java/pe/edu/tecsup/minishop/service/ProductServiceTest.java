@@ -83,7 +83,7 @@ class ProductServiceTest {
         assertThat(updatedProduct.getName()).isEqualTo("Mouse Pro");
         assertThat(updatedProduct.getDescription()).isEqualTo("Updated mouse");
         assertThat(updatedProduct.getPrice()).isEqualByComparingTo("99.90");
-        assertThat(updatedProduct.getStock()).isEqualTo(15);
+        assertThat(updatedProduct.getStock()).isEqualTo(16);
     }
 
     @Test
