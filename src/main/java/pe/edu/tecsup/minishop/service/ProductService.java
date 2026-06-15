@@ -36,15 +36,19 @@ public class ProductService {
 
     public Product update(Long id, Product product) {
         Product currentProduct = findById(id);
-        currentProduct.setName(product.getName());
-        currentProduct.setDescription(product.getDescription());
-        currentProduct.setPrice(product.getPrice());
-        currentProduct.setStock(product.getStock());
+        applyProductChanges(currentProduct, product);
         return productRepository.save(currentProduct);
     }
 
     public void delete(Long id) {
         Product currentProduct = findById(id);
         productRepository.delete(currentProduct);
+    }
+
+    private void applyProductChanges(Product currentProduct, Product updatedProduct) {
+        currentProduct.setName(updatedProduct.getName());
+        currentProduct.setDescription(updatedProduct.getDescription());
+        currentProduct.setPrice(updatedProduct.getPrice());
+        currentProduct.setStock(updatedProduct.getStock());
     }
 }
