@@ -1,4 +1,5 @@
 ![CI Pipeline](https://github.com/luisberrio-lang/LAB13-CONSTRUCCION/actions/workflows/ci.yml/badge.svg)
+[![Laboratorio 14 - Pruebas Estaticas](https://github.com/luisberrio-lang/LAB13-CONSTRUCCION/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/luisberrio-lang/LAB13-CONSTRUCCION/actions/workflows/ci.yml)
 
 # MiniShop
 
@@ -92,3 +93,34 @@ El pipeline realiza estas tareas:
 - Ejecuta `mvn verify`.
 - Publica `target/surefire-reports` como artefacto con `actions/upload-artifact@v4`.
 - Usa `if: always()` para publicar reportes aunque las pruebas fallen.
+
+## Laboratorio 14 - Pruebas Estaticas
+
+El Laboratorio 14 agrega control de calidad estatico y cobertura al proyecto MiniShop existente.
+
+- JaCoCo genera reportes de cobertura durante `verify`.
+- SonarCloud queda integrado mediante `sonar-maven-plugin`.
+- La cobertura minima requerida es 70% de lineas.
+- El analisis de SonarCloud se ejecuta solo cuando existe `SONAR_TOKEN` en GitHub Actions.
+- No se deben escribir tokens reales en el repositorio.
+
+Comando para ejecutar pruebas, generar cobertura y validar el umbral:
+
+```bash
+mvn clean verify --no-transfer-progress
+```
+
+Ubicacion de reportes:
+
+- HTML JaCoCo: `target/site/jacoco/index.html`
+- XML JaCoCo: `target/site/jacoco/jacoco.xml`
+- Surefire: `target/surefire-reports/`
+
+Secretos requeridos en GitHub Actions:
+
+- `SONAR_TOKEN`: token generado en SonarCloud.
+- `SONAR_ORGANIZATION`: clave de la organizacion en SonarCloud.
+- `SONAR_PROJECT_KEY`: clave del proyecto en SonarCloud.
+- `GITHUB_TOKEN`: token automatico provisto por GitHub Actions.
+
+El workflow publica como artifacts los reportes de Surefire y JaCoCo, incluso si una prueba falla.
