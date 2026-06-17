@@ -71,6 +71,22 @@ class ProductIntegrationTest {
     }
 
     @Test
+    void createProductWithoutPriceReturnsBadRequest() throws Exception {
+        mockMvc.perform(post("/api/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Speaker",
+                                  "description": "Bluetooth speaker",
+                                  "stock": 6
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.fields.price").value("Product price is required"));
+    }
+
+    @Test
     void updateExistingProductReturnsUpdatedProduct() throws Exception {
         mockMvc.perform(put("/api/products/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -89,6 +105,22 @@ class ProductIntegrationTest {
     }
 
     @Test
+    void updateMissingProductReturnsNotFound() throws Exception {
+        mockMvc.perform(put("/api/products/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "Laptop Pro",
+                                  "description": "Updated laptop",
+                                  "price": 2999.90,
+                                  "stock": 4
+                                }
+                                """))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Product with id 999 was not found"));
+    }
+
+    @Test
     void findMissingProductReturnsNotFound() throws Exception {
         mockMvc.perform(get("/api/products/999"))
                 .andExpect(status().isNotFound())
@@ -102,5 +134,12 @@ class ProductIntegrationTest {
 
         mockMvc.perform(get("/api/products/2"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteMissingProductReturnsNotFound() throws Exception {
+        mockMvc.perform(delete("/api/products/999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Product with id 999 was not found"));
     }
 }
