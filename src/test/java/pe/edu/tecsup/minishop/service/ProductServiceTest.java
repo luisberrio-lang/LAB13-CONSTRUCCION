@@ -16,6 +16,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -87,6 +88,18 @@ class ProductServiceTest {
     }
 
     @Test
+    void updateThrowsWhenProductDoesNotExist() {
+        Product request = new Product(null, "Mouse Pro", "Updated mouse", new BigDecimal("99.90"), 15);
+        when(productRepository.findById(50L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> productService.update(50L, request))
+                .isInstanceOf(ProductNotFoundException.class)
+                .hasMessage("Product with id 50 was not found");
+
+        verify(productRepository, never()).save(any(Product.class));
+    }
+
+    @Test
     void deleteRemovesExistingProduct() {
         Product product = new Product(1L, "Monitor", "Full HD monitor", new BigDecimal("599.00"), 3);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
@@ -94,5 +107,16 @@ class ProductServiceTest {
         productService.delete(1L);
 
         verify(productRepository).delete(product);
+    }
+
+    @Test
+    void deleteThrowsWhenProductDoesNotExist() {
+        when(productRepository.findById(77L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> productService.delete(77L))
+                .isInstanceOf(ProductNotFoundException.class)
+                .hasMessage("Product with id 77 was not found");
+
+        verify(productRepository, never()).delete(any(Product.class));
     }
 }
